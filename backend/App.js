@@ -1,7 +1,9 @@
 const express = require("express");
+require("express-async-errors");
 const app = express();
 
 const morgan = require("morgan");
+const colors = require("colors");
 
 const globalErrorHandler = require("./ErrorHandlers/globalErrorHandler");
 const notFoundError = require("./ErrorHandlers/notFoundHandler");
@@ -13,7 +15,6 @@ const connectDB = require("./ConnectDB/connectDB");
 const appRouter = require("./Routes/appRouter");
 const goalsRouter = require("./Routes/goalsRoutes");
 
-require("express-async-errors");
 require("dotenv").config();
 
 app.use(express.json());
@@ -29,12 +30,13 @@ app.use(notFoundError);
 
 const startServer = async () => {
   try {
-    // await connectDB(process.env.MONGO_URL);
+    await connectDB(process.env.MONGO_URL);
     app.listen(Number(process.env.PORT), () => {
       logger.info(`Server is listening at port ${process.env.PORT}`);
     });
   } catch (error) {
     logger.error("Failed to start server");
+    process.exit(1);
   }
 };
 

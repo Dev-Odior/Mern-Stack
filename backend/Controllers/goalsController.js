@@ -1,10 +1,19 @@
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError } = require("../CustomErrors/customError");
+const {
+  BadRequestError,
+  NotFoundError,
+} = require("../CustomErrors/customError");
+const Goal = require("../Models/goalsModel");
 
 //@desc Get goals
 //@route GET/api/goals
 //@access Private
 const getGoals = async (req, res) => {
+  const goals = await Goal.find({});
+  console.log(goals);
+  if (goals.length < 1) {
+    throw new NotFoundError("No goals found");
+  }
   res.status(StatusCodes.OK).json({ msg: "To fetch all goals" });
 };
 
@@ -12,7 +21,6 @@ const getGoals = async (req, res) => {
 //@route POST/api/goals
 //@access Private
 const setGoal = async (req, res) => {
-  console.log(req.body, "The body files");
   if (!req.body.text) {
     throw new BadRequestError("Please input valid credentials");
   }
