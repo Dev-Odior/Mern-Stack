@@ -14,6 +14,7 @@ const logger = bunyan.createLogger({ name: "App" });
 const connectDB = require("./ConnectDB/connectDB");
 const appRouter = require("./Routes/appRouter");
 const goalsRouter = require("./Routes/goalsRoutes");
+const usersRouter = require("./Routes/userRoutes");
 
 require("dotenv").config();
 
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 // app.use(morgan("tiny"));
 
 app.use("/api/v1/goals", goalsRouter);
+app.use("/api/v1/users", usersRouter);
 app.use("/api/v1", appRouter);
 
 app.use(globalErrorHandler);
