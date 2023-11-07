@@ -9,7 +9,6 @@ const User = require("../Models/userModel");
 //@route POST/api/user
 //@access Public
 const registerUser = async (req, res) => {
-  await User.deleteMany();
   const { email, password, name } = req.body;
 
   if (!email || !password || !name) {
@@ -25,7 +24,14 @@ const registerUser = async (req, res) => {
 
   const newUser = await User.create({ email, password, name });
 
-  res.json({ _id: newUser._id, name: newUser.name, email: newUser.email });
+  const token = newUser.JWT_TOKEN({ id: newUser._id });
+
+  res.json({
+    _id: newUser._id,
+    name: newUser.name,
+    email: newUser.email,
+    token,
+  });
 };
 
 //@desc Authenticate a User
@@ -49,16 +55,22 @@ const loginUser = async (req, res) => {
     throw new BadRequestError("You have entered a wrong password");
   }
 
-  res
-    .status(StatusCodes.OK)
-    .json({ _id: findUser._id, name: findUser.name, email: findUser.email });
+  const token = findUser.JWT_TOKEN({ id: findUser._id });
+
+  res.status(StatusCodes.OK).json({
+    _id: findUser._id,
+    name: findUser.name,
+    email: findUser.email,
+    token,
+  });
 };
 
 //@desc Get a User
 //@route Get/api/user/me
 //@access Public
 const getUser = (req, res) => {
-  res.send("User data display");
+  const { _id, name, email } = req.user;
+  res.status(200).json({ id: _id, name, email });
 };
 
 module.exports = { registerUser, loginUser, getUser };

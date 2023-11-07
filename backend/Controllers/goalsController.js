@@ -9,7 +9,9 @@ const Goal = require("../Models/goalsModel");
 //@route GET/api/goals
 //@access Private
 const getGoals = async (req, res) => {
-  const goals = await Goal.find({});
+  const { _id } = req.user;
+  const goals = await Goal.find({ user: _id });
+
   if (goals.length < 1) {
     throw new NotFoundError("No goals found");
   }
@@ -26,6 +28,7 @@ const setGoal = async (req, res) => {
 
   const goal = await Goal.create({
     text: req.body.text,
+    user: req.user._id,
   });
 
   res.status(StatusCodes.CREATED).json(goal);
@@ -36,7 +39,7 @@ const setGoal = async (req, res) => {
 //@access Private
 const updateGoal = async (req, res) => {
   const id = req.params.id;
-  const goal = await Goal.findById(id);
+  const goal = await Goal.find({ _id: id, user: req.user._id });
   if (!goal) {
     throw new NotFoundError(`No goal with the id ${id} exists`);
   }

@@ -3,10 +3,11 @@ require("express-async-errors");
 const app = express();
 
 const morgan = require("morgan");
-const colors = require("colors");
 
 const globalErrorHandler = require("./ErrorHandlers/globalErrorHandler");
 const notFoundError = require("./ErrorHandlers/notFoundHandler");
+
+const { protect } = require("./Middleware/authentication");
 
 const bunyan = require("bunyan");
 const logger = bunyan.createLogger({ name: "App" });
@@ -23,7 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // app.use(morgan("tiny"));
 
-app.use("/api/v1/goals", goalsRouter);
+app.use("/api/v1/goals", protect, goalsRouter);
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1", appRouter);
 
