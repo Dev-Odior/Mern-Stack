@@ -4,6 +4,7 @@ const {
   NotFoundError,
 } = require("../CustomErrors/customError");
 const Goal = require("../Models/goalsModel");
+const User = require("../Models/userModel");
 
 //@desc Get goals
 //@route GET/api/goals
@@ -39,7 +40,17 @@ const setGoal = async (req, res) => {
 //@access Private
 const updateGoal = async (req, res) => {
   const id = req.params.id;
-  const goal = await Goal.find({ _id: id, user: req.user._id });
+  const goal = await Goal.findOne({ _id: id });
+  const user = User.find({ user: req.user._id });
+
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  if (goal.user.toString() !== user.id) {
+    throw new BadRequestError("You are not authorized to do stuff");
+  }
+
   if (!goal) {
     throw new NotFoundError(`No goal with the id ${id} exists`);
   }
@@ -58,13 +69,23 @@ const updateGoal = async (req, res) => {
 //@access Private
 const deleteGoal = async (req, res) => {
   const id = req.params.id;
-  const find = await Goal.findById(id);
+  const goal = await Goal.findOne({ _id: id });
 
-  if (!find) {
+  const user = User.find({ user: req.user._id });
+
+  if (!goal) {
     throw new NotFoundError(`No goal with the id ${id} exists`);
   }
 
-  await Goal.findOneAndDelete({ _id: id });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
+
+  if (goal.user.toString() !== user.id) {
+    throw new BadRequestError("You are not authorized to do stuff");
+  }
+
+  await Goal.findOneAndDelete({ _id: id, user: req.user._id });
   res.status(StatusCodes.OK).json({ id: id });
 };
 

@@ -30,7 +30,7 @@ const protect = async (req, res, next) => {
   if (!user) {
     throw new NotFoundError("User not found");
   }
-  console.log(user);
+
   req.user = user;
   next();
 };
