@@ -4,7 +4,8 @@
   "description": "",
   "main": "App.js",
   "scripts": {
-    "start": "nodemon backend/App.js | bunyan -o short"
+    "start": "nodemon backend/App.js | bunyan -o short",
+    "client": "npm start --prefix frontend"
   },
   "keywords": [],
   "author": "",
