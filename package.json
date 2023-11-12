@@ -5,7 +5,8 @@
   "main": "App.js",
   "scripts": {
     "start": "nodemon backend/App.js | bunyan -o short",
-    "client": "npm start --prefix frontend"
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run client\" \"npm start\""
   },
   "keywords": [],
   "author": "",
