@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { reset, login } from "../features/auth/authSlice";
+import { toast } from "react-toastify";
 
 const initialData = {
   name: "",
@@ -10,7 +14,14 @@ const initialData = {
 
 const Login = () => {
   const [formData, setFormData] = useState(initialData);
-  const { name, email, password, confirmPassword } = formData;
+  const { email, password } = formData;
+
+  const { user, isError, isSuccess, message, isLoading } = useSelector(
+    (state) => state.auth
+  );
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -21,7 +32,24 @@ const Login = () => {
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
+    dispatch(login(formData));
   };
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (user || isSuccess) {
+      navigate("/");
+      toast.success(`Welcome ${user?.name}`);
+      dispatch(reset());
+    }
+  }, [user, isError, isSuccess, message, dispatch, navigate]);
+
+  if (isLoading) {
+    return <h1>Loading....</h1>;
+  }
 
   return (
     <>
